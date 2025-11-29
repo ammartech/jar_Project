@@ -291,7 +291,7 @@ function RideRequestCard({ request, onUpdate }: { request: any; onUpdate: () => 
             Passenger: {request.passenger?.firstName} {request.passenger?.lastName}
           </p>
           <p className="text-sm text-secondary">
-            Distance: {request.distance?.toFixed(2)} km | Cost: ${request.cost?.toFixed(2)}
+            Distance: {request.distance?.toFixed(2)} km | Cost: {request.cost?.toFixed(2)} ر.س
           </p>
           {request.isPreBooked && request.scheduledTime && (
             <p className="text-sm text-secondary">

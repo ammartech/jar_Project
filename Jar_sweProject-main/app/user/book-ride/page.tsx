@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import AuthGuard from '@/components/AuthGuard'
 import MapView from '@/components/MapView'
+import AddressAutocomplete from '@/components/AddressAutocomplete'
 import api from '@/lib/api'
 import toast from 'react-hot-toast'
 
@@ -168,14 +169,14 @@ export default function BookRide() {
                 markers={markers}
                 showRoute={pickupLocation && dropoffLocation ? true : false}
                 height="500px"
-                onLocationSelect={(lat, lng) => {
+                onLocationSelect={(lat, lng, address) => {
                   if (!pickupLocation) {
                     setPickupLocation({ lat, lng })
-                    reverseGeocode(lat, lng, 'pickup')
+                    if (address) setPickupAddress(address)
                     toast.success('Pickup location set')
                   } else if (!dropoffLocation) {
                     setDropoffLocation({ lat, lng })
-                    reverseGeocode(lat, lng, 'dropoff')
+                    if (address) setDropoffAddress(address)
                     toast.success('Dropoff location set')
                   } else {
                     toast('Reset locations to set new ones', { icon: 'ℹ️' })
@@ -209,29 +210,35 @@ export default function BookRide() {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">Pickup Location</label>
-                  <input
-                    type="text"
+                  <AddressAutocomplete
                     value={pickupAddress}
-                    onChange={(e) => setPickupAddress(e.target.value)}
-                    className="input"
-                    placeholder="Click on map or use current location"
+                    onChange={setPickupAddress}
+                    onPlaceSelect={(lat, lng, address) => {
+                      setPickupLocation({ lat, lng })
+                      setPickupAddress(address)
+                      toast.success('Pickup location selected')
+                    }}
+                    placeholder="Search or click on map"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">Dropoff Location</label>
-                  <input
-                    type="text"
+                  <AddressAutocomplete
                     value={dropoffAddress}
-                    onChange={(e) => setDropoffAddress(e.target.value)}
-                    className="input"
-                    placeholder="Click on map to set dropoff"
+                    onChange={setDropoffAddress}
+                    onPlaceSelect={(lat, lng, address) => {
+                      setDropoffLocation({ lat, lng })
+                      setDropoffAddress(address)
+                      toast.success('Dropoff location selected')
+                    }}
+                    placeholder="Search or click on map"
                   />
                 </div>
 
                 {estimatedCost > 0 && (
                   <div className="p-4 bg-primary text-white rounded-lg">
                     <p className="text-sm">Estimated Cost</p>
-                    <p className="text-2xl font-bold">${estimatedCost.toFixed(2)}</p>
+                    <p className="text-2xl font-bold">{estimatedCost.toFixed(2)} ر.س</p>
                   </div>
                 )}
 
@@ -354,8 +361,8 @@ export default function BookRide() {
                       <span className="text-secondary">To:</span> {dropoffAddress}
                     </p>
                     <p>
-                      <span className="text-secondary">Estimated Cost:</span> $
-                      {estimatedCost.toFixed(2)}
+                      <span className="text-secondary">Estimated Cost:</span>{' '}
+                      {estimatedCost.toFixed(2)} ر.س
                     </p>
                   </div>
                 </div>
