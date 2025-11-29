@@ -11,7 +11,7 @@ interface MapViewProps {
     type: 'pickup' | 'dropoff' | 'driver'
   }>
   showRoute?: boolean
-  onLocationSelect?: (lat: number, lng: number) => void
+  onLocationSelect?: (lat: number, lng: number, address?: string) => void
   height?: string
 }
 
@@ -71,8 +71,19 @@ export default function MapView({
     })
 
     if (onLocationSelect) {
-      mapInstance.addListener('click', (e: any) => {
-        onLocationSelect(e.latLng.lat(), e.latLng.lng())
+      mapInstance.addListener('click', async (e: any) => {
+        const lat = e.latLng.lat()
+        const lng = e.latLng.lng()
+
+        // Reverse geocode to get address
+        const geocoder = new google.maps.Geocoder()
+        geocoder.geocode({ location: { lat, lng } }, (results: any, status: any) => {
+          if (status === 'OK' && results[0]) {
+            onLocationSelect(lat, lng, results[0].formatted_address)
+          } else {
+            onLocationSelect(lat, lng)
+          }
+        })
       })
     }
 

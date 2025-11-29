@@ -206,7 +206,7 @@ export default function TrackRide() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-secondary">Cost:</span>
-                  <span className="font-medium">${ride.costPerPassenger.toFixed(2)}</span>
+                  <span className="font-medium">{ride.costPerPassenger.toFixed(2)} ر.س</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-secondary">Payment:</span>
